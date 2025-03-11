@@ -42,8 +42,8 @@ const Signin = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center mt-20 mb-20">
-      <div className="w-3/4 max-w-4xl bg-white rounded-lg shadow-lg flex">
+    <div className="h-screen   mb-30 flex items-center justify-center ">
+      <div className="w-full  bg-white rounded-lg shadow-lg flex">
         {/* Left Side - Image */}
         <div className="w-1/2 hidden md:block">
           <img src={Fruits} alt="Vegetables" className="w-full h-full object-cover rounded-l-lg border-8 border-white" />

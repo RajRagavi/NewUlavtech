@@ -3,7 +3,8 @@ import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/firebaseConfig"; 
+import { auth, db } from "../firebase/firebaseConfig"; 
+import { doc, getDoc } from "firebase/firestore"; // Firestore functions
 import logo from "../assets/img/logo.png";
 
 const Navbar = () => {
@@ -11,24 +12,31 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const dropdownRef = useRef(null); // Create a ref for the dropdown
+  const [userName, setUserName] = useState(""); // Store user's name
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        
+        // Check if displayName is available in Firebase Authentication
+        if (currentUser.displayName) {
+          setUserName(currentUser.displayName);
+        } else {
+          // Fetch user data from Firestore (if stored there)
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            setUserName(userDoc.data().name || "User"); // Default name
+          }
+        }
+      } else {
+        setUser(null);
+        setUserName("");
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
@@ -52,7 +60,7 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <nav className="hidden lg:flex items-center space-x-8">
           <a href="/" className="nav-link">Home</a>
-          <a href="/" className="nav-link">About Us</a>
+          <a href="/about" className="nav-link">About Us</a>
           <a href="/investment" className="nav-link">Investment</a>
           <a href="/contactus" className="nav-link">Contact Us</a>
         </nav>
@@ -65,12 +73,11 @@ const Navbar = () => {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2 p-2 bg-gray-800 text-white rounded-lg font-semibold cursor-pointer hover:bg-green-800 transition"
               >
-                <img src={user.photoURL || "https://via.placeholder.com/50"} alt="User" className="w-8 h-8 rounded-full" />
-                <span>{user.displayName || "User"}</span>
+                <span>{userName}</span> {/* Display User's Name */}
                 <IoIosArrowDown />
               </button>
 
-              {/* User Dropdown with useRef */}
+              {/* User Dropdown */}
               {dropdownOpen && (
                 <div ref={dropdownRef} className="absolute right-0 mt-2 w-40 bg-black rounded-lg shadow-lg py-2">
                   <a href="/profile" className="block px-4 py-2 hover:bg-green-500">Profile</a>
@@ -105,7 +112,7 @@ const Navbar = () => {
       {menuOpen && (
         <div className="lg:hidden absolute top-20 left-0 w-full bg-white shadow-md py-5 flex flex-col items-center space-y-4">
           <a href="/" className="text-lg font-semibold">Home</a>
-          <a href="/" className="text-lg font-semibold">About Us</a>
+          <a href="/about" className="text-lg font-semibold">About Us</a>
           <a href="/investment" className="text-lg font-semibold">Investment</a>
           <a href="/contactus" className="text-lg font-semibold">Contact Us</a>
 

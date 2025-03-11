@@ -3,33 +3,60 @@ import { FaBell, FaUser, FaChartBar, FaDollarSign, FaClock } from "react-icons/f
 import Sidebar from "./Sidebar";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useNavigate } from "react-router-dom"; // For redirecting users
+
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const db = getFirestore();
+const auth = getAuth();
 
 const Dashboard = () => {
-  const [userRole, setUserRole] = useState(""); // Stores user role
+  const [role, setUserRole] = useState(""); // Stores user role
+  const [loading, setLoading] = useState(true); // Track loading state
+  const navigate = useNavigate(); // For navigation
 
   useEffect(() => {
     AOS.init({ duration: 800 });
 
-    // Simulating user role retrieval (Replace this with actual authentication logic)
-    const role = localStorage.getItem("userRole") || "investor"; // Default: Investor
-    setUserRole(role);
-  }, []);
+    // Listen to auth state changes
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Fetch user role from Firestore
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          setUserRole(userSnap.data().role); // Get role from Firestore
+        } else {
+          setUserRole("investor"); // Default role if not found
+        }
+      } else {
+        // If no user is logged in, redirect to login page
+        navigate("/login");
+      }
+      setLoading(false); // Set loading to false after fetching
+    });
+
+    return () => unsubscribe(); // Cleanup subscription
+  }, [navigate]);
+
+  // Show loading screen while fetching data
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen text-xl">Loading...</div>;
+  }
 
   return (
-    <div className="flex h-full bg-gray-200 "  >
-   
+    <div className="flex h-full bg-gray-200">
       <Sidebar />
-
-
       <div className="flex-1 p-6" data-aos="fade-right">
         <h1 className="text-2xl font-bold mb-4">
-          {userRole === "admin" ? "Admin Dashboard" : "Investor Dashboard"}
+          {role === "admin" ? "Admin Dashboard" : "Investor Dashboard"}
         </h1>
 
-        {userRole === "admin" ? (
+        {role === "admin" ? (
           <>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { title: "Total Users", value: "500 Active Users", icon: <FaUser className="text-3xl text-blue-500" /> },
                 { title: "Total Investment", value: "₹10,00,000", icon: <FaDollarSign className="text-3xl text-green-500" /> },
@@ -105,8 +132,7 @@ const Dashboard = () => {
           </>
         ) : (
           <>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 { title: "My Investment", value: "₹1,50,000", icon: <FaDollarSign className="text-3xl text-green-500" /> },
                 { title: "Total Returns", value: "₹40,000", icon: <FaChartBar className="text-3xl text-yellow-500" /> },

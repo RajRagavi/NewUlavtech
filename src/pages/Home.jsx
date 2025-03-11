@@ -12,9 +12,9 @@ import { FaChartBar } from "react-icons/fa";
 import { HiReceiptPercent } from "react-icons/hi2";
 
 const containerData = [
-  { id: 1, img: icon, title: "Affordable Investments", description: "Effective way to put your money to work and potentially build wealth for your future with us." },
-  { id: 2, img: dollar, title: "Smart Savings", description: "Maximize your earnings with our innovative investment strategies tailored for growth." },
-  { id: 3, img: Investments, title: "Secure Future", description: "Plan ahead with confidence and secure financial stability with our trusted investment solutions." },
+  { id: 1, img: icon, title: "Affordable Plans", description: "Effective way to put your money to work and potentially build wealth for your future with us." },
+  { id: 2, img: dollar, title: "Smart Savings", description: "Maximize your earnings with our innovative referrel schemes tailored for growth." },
+  { id: 3, img: Investments, title: "Secure Future", description: "Plan ahead with confidence and secure financial stability with our trusted environment." },
 ];
 
 const InvestmentProcess = [
@@ -49,38 +49,38 @@ const Home = () => {
     <div className="mt-26 md:mt-10 lg:mt-26">  
 
     
-    <div className="bg-green-200 min-h-screen rounded-b-4xl p-5">
-  <div className="flex flex-col md:flex-row items-center relative">
+<div className="bg-green-200 min-h-screen rounded-b-4xl p-5 lg:px-20">
+  <div className="flex flex-col md:flex-row items-center relative max-w-screen-xl mx-auto">
     
     {/* Left Content */}
     <div className="w-full md:w-1/2 space-y-6 text-center md:text-left">
-      <h1 className="text-4xl md:text-5xl font-bold leading-tight text-black">
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-black">
         UlavTech <br /> A New Evolution to <br /> Agri Industry <br />
         <span className="text-green-700">Modernly Tradition</span>
       </h1>
-      <p className="text-lg md:text-xl text-gray-700">
+      <p className="text-lg md:text-xl lg:text-2xl text-gray-700">
         The Mission of UlavTech is to distribute the natural products with utmost freshness and quality. 
         Let's join our hands together to raise the Farmers.
       </p>
      
-      <button className="text-white bg-black !bg-black border border-black px-4 !w-[120px] py-2 rounded-md text-sm cursor-pointer">
-  Get Started
-</button>
-
+      <button className="text-white bg-black border border-black px-6 py-3 rounded-md text-lg cursor-pointer">
+        Get Started
+      </button>
 
       {/* Image Below Button */}
-      <div className="absolute lg:mt-10 flex justify-center md:justify-start hidden sm:hidden md:block">
-  <img src={chartImage} alt="Chart" 
-    className="bg-white rounded-lg h-full w-48 md:h-60 md:w-60" />
-</div>
-
+      <div className="absolute lg:mt-0 flex justify-center md:justify-start hidden md:block">
+        <img src={chartImage} alt="Chart" 
+          className="bg-white rounded-lg h-full w-48 md:h-60 md:w-60 lg:h-72 lg:w-72" />
+      </div>
     </div>
 
     {/* Right Image */}
-    <div className="w-full md:w-1/2 flex md:justify-end mt-6 md:mt-0">
-  <img src={green} alt="Fruits" 
-    className="absolute w-full md:w-[50%] h-full md:h-[500px] object-cover rounded-lg lg:mt-50 md:mt-10 md:top-[-10px]" />
-</div>
+    <div className="w-full md:w-1/2 flex md:justify-end mt-6 md:mt-0 relative">
+    <img src={green} alt="Fruits" 
+    className="absolute w-full md:w-[100%] lg:w-[100%] h-full md:h-[500px] object-cover rounded-lg lg:mt-0 md:mt-10 md:top-[-10px]" />
+
+    </div>
+
 
 
 

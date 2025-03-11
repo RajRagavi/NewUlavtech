@@ -15,12 +15,13 @@ import UserData from "./BackendUI/UserData";
 import SeedPlan from "./BackendUI/SeedPlan";
 import RootPlan from "./BackendUI/RootPlan";
 import SproutPlan from "./BackendUI/SproutPlan";
+import InvestForm from "./BackendUI/InvestForm";
 
 function Layout() {
   const location = useLocation();
 
 
-  const hideNavbarFooterRoutes = ["/dashboard", "/user-data", "/plans/seed","/plans/root","/plans/sprout"];
+  const hideNavbarFooterRoutes = ["/dashboard", "/user-data", "/plans/seed","/plans/root","/plans/sprout","/register","/signin","/invest"];
 
   const shouldHideNavbarFooter = hideNavbarFooterRoutes.includes(location.pathname);
 
@@ -46,6 +47,7 @@ function Layout() {
         <Route path="/plans/seed" element={<SeedPlan />} />
         <Route path="/plans/root" element={<RootPlan />} />
         <Route path="/plans/sprout" element={<SproutPlan />} />
+        <Route path="/invest" element={<InvestForm />} />
       </Routes>
 
    

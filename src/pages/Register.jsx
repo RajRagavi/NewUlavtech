@@ -5,12 +5,20 @@ import Fb from '../assets/img/Fb.png';
 import Insta from '../assets/img/Insta.png';
 import Logo from '../assets/img/logo.png';
 
-import { auth, googleProvider } from "../firebase/firebaseConfig";
-import { RecaptchaVerifier, signInWithPhoneNumber, createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
+import { auth, googleProvider,db, storage } from "../firebase/firebaseConfig";
+import {  createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+// import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const Register = () => {
 
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({}); 
+  const [successMessage, setSuccessMessage] = useState("");
   
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -18,74 +26,119 @@ const Register = () => {
     password: "",
     otp: "",
     verificationId: null,
+    // profilePhoto: "",
   });
 
+
+  // const handlePhotoChange = (e) => {
+  //   const file = e.target.files[0];
+
+  //   if (file) {
+  //     // Validate file type
+  //     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+  //     if (!validTypes.includes(file.type)) {
+  //       setErrors((prevErrors) => ({ ...prevErrors, profilePhoto: "Only JPG, PNG, JPEG files are allowed." }));
+  //       return;
+  //     }
+
+  //     // Validate file size (2MB max)
+  //     if (file.size > 2 * 1024 * 1024) {
+  //       setErrors((prevErrors) => ({ ...prevErrors, profilePhoto: "File size must be less than 2MB." }));
+  //       return;
+  //     }
+
+  //     // If valid, set the file and clear errors
+  //     setForm((prevForm) => ({ ...prevForm, profilePhoto: file }));
+  //     setErrors((prevErrors) => ({ ...prevErrors, profilePhoto: "" }));
+  //   }
+  // };
+
+  
   // Handle Input Changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+
+    validateField(e.target.name, e.target.value);
   };
 
-  // Generate OTP for Phone Verification
-  const generateOTP = () => {
-    if (!form.phone) {
-      alert("Please enter your phone number!");
-      return;
-    }
-  
-    // Ensure ReCAPTCHA is set up properly
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "invisible",
-      callback: (response) => {
-        console.log("ReCAPTCHA solved:", response);
-      },
-      "expired-callback": () => {
-        alert("ReCAPTCHA expired. Please try again.");
-      }
-    });
-  
-    const phoneNumber = `+91${form.phone}`;
-  
-    signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
-      .then((confirmationResult) => {
-        setForm((prevForm) => ({ ...prevForm, verificationId: confirmationResult }));
-        alert("OTP Sent Successfully!");
-      })
-      .catch((error) => {
-        console.error("OTP Error:", error);
-        alert(error.message);
-      });
-  };
-  // Verify OTP
-  const verifyOTP = () => {
-    if (!form.verificationId) {
-      alert("Please generate OTP first.");
-      return;
+
+  const validateField = (name, value) => {
+    let errorMsg = "";
+
+    switch (name) {
+      case "name":
+        if (!value.trim()) errorMsg = "Name is required.";
+        break;
+      case "phone":
+        if (!/^\d{10}$/.test(value)) errorMsg = "Enter a valid 10-digit phone number.";
+        break;
+      case "email":
+        if (!/^\S+@\S+\.\S+$/.test(value)) errorMsg = "Enter a valid email address.";
+        break;
+      case "password":
+        if (value.length < 6) errorMsg = "Password must be at least 6 characters.";
+        break;
+      default:
+        break;
     }
 
-    form.verificationId
-      .confirm(form.otp)
-      .then((result) => {
-        alert("Phone Verified Successfully!");
-      })
-      .catch((error) => {
-        alert("Invalid OTP");
-      });
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
   };
 
-  // Register User with Email and Password
+  
+  // Validate all fields before submission
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Name is required.";
+    if (!/^\d{10}$/.test(form.phone)) newErrors.phone = "Enter a valid 10-digit phone number.";
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter a valid email address.";
+    if (form.password.length < 6) newErrors.password = "Password must be at least 6 characters.";
+
+    // if (!form.profilePhoto) {
+    //   newErrors.profilePhoto = "Profile photo is required.";
+    // }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
   const handleEmailRegister = async (e) => {
     e.preventDefault();
-    
-    if (!form.email.includes("@") || form.password.length < 6) {
-      alert("Invalid email or password (must be at least 6 characters)");
-      return;
-    }
+
+    if (!validateForm()) return; // Stop if validation fails
 
     try {
-      await createUserWithEmailAndPassword(auth, form.email, form.password);
-      alert("User Registered Successfully!");
+      const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+      const user = userCredential.user;
+      // let photoURL = "";
+
+      // if (form.profilePhoto) {
+      //   const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+      //   const uploadTask = uploadBytesResumable(storageRef, form.profilePhoto);
+      //   await new Promise((resolve, reject) => {
+      //     uploadTask.on(
+      //       "state_changed",
+      //       null,
+      //       (error) => reject(error),
+      //       async () => {
+      //         photoURL = await getDownloadURL(uploadTask.snapshot.ref);
+      //         resolve();
+      //       }
+      //     );
+      //   });
+      // }
+
+      await setDoc(doc(db, "users", user.uid), {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        userId: user.uid,
+        // profilePhoto: photoURL,
+        createdAt: new Date(),
+      });
+
+      navigate("/signin");
     } catch (error) {
-      alert(error.message);
+      console.error("Error registering user:", error.message);
     }
   };
 
@@ -100,8 +153,8 @@ const Register = () => {
   };
 
   return (
-    <div className="h-screen  mt-60 mb-30 flex items-center justify-center ">
-      <div className="w-3/4 max-w-4xl bg-white rounded-lg shadow-lg flex">
+    <div className="h-screen   mb-30 flex items-center justify-center ">
+      <div className="w-full  bg-white rounded-lg shadow-lg flex">
 
         {/* Left Side Image */}
         <div className="w-1/2 hidden md:block">
@@ -126,58 +179,75 @@ const Register = () => {
           <p className="text-black mb-2 text-sm">Sign up for an UlavTech account</p>
 
           {/* Sign Up Form */}
+          
           <form onSubmit={handleEmailRegister}>
-          <input
+          <div className="mb-3">
+            <input
               type="text"
               name="name"
               placeholder="Name"
-              className="w-full p-3 mb-2 border border-gray-300 rounded-lg text-sm"
+              className={`w-full p-3 border rounded-lg text-sm ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              }`}
               value={form.name}
               onChange={handleChange}
             />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+          </div>
+          <div className="mb-3">
             <input
               type="text"
               name="phone"
               placeholder="Mobile Number"
-              className="w-full p-3 mb-2 border border-gray-300 rounded-lg text-sm"
+              className={`w-full p-3 border rounded-lg text-sm ${
+                errors.phone ? "border-red-500" : "border-gray-300"
+              }`}
               value={form.phone}
               onChange={handleChange}
             />
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+          </div>
 
-            {/* OTP Section */}
-            {/* <div className="flex gap-x-2">
-              <button type="button" onClick={generateOTP} className="w-1/2 p-3 mb-2 border border-gray-300 rounded-lg text-sm bg-gray-300">
-                Generate OTP
-              </button>
-              <input
-                type="text"
-                name="otp"
-                placeholder="Enter OTP"
-                className="w-1/2 p-3 mb-2 border border-gray-300 rounded-lg text-sm"
-                value={form.otp}
-                onChange={handleChange}
-              />
-              <button type="button" onClick={verifyOTP} className="p-2 text-white bg-green-600 rounded-lg">Verify</button>
-            </div> */}
-
-            {/* Email & Password */}
+          {/* Email Input */}
+          <div className="mb-3">
             <input
               type="email"
               name="email"
               placeholder="Email ID"
-              className="w-full p-3 mb-2 border border-gray-300 rounded-lg text-sm"
+              className={`w-full p-3 border rounded-lg text-sm ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              }`}
               value={form.email}
               onChange={handleChange}
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Password Input */}
+          <div className="mb-3">
             <input
               type="password"
               name="password"
               placeholder="Password"
-              className="w-full p-3 mb-2 border border-gray-300 rounded-lg text-sm"
+              className={`w-full p-3 border rounded-lg text-sm ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              }`}
               value={form.password}
               onChange={handleChange}
             />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          </div>
 
+          {/* Profile Photo Input */}
+          {/* <div className="mb-4">
+            <input
+              type="file"
+              accept="image/jpeg, image/png, image/jpg"
+              onChange={handlePhotoChange}
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm"
+            />
+            {errors.profilePhoto && <p className="text-red-500 text-xs mt-1">{errors.profilePhoto}</p>}
+          </div> */}
             <button type="submit" className="w-full p-3 bg-black text-white rounded-lg font-semibold cursor-pointer">
               Sign Up
             </button>
@@ -192,14 +262,11 @@ const Register = () => {
 
           {/* Social Login */}
           <div className="flex justify-center space-x-4 mb-4">
-            <button className="p-2 cursor-pointer hover:shadow">
+            {/* <button className="p-2 cursor-pointer hover:shadow">
               <img src={Fb} alt="Facebook" className="w-6 h-6" />
-            </button>
+            </button> */}
             <button onClick={handleGoogleLogin} className="p-2 cursor-pointer hover:shadow">
               <img src={Google} alt="Google" className="w-6 h-6" />
-            </button>
-            <button className="p-2 cursor-pointer hover:shadow">
-              <img src={Insta} alt="Instagram" className="w-6 h-6" />
             </button>
           </div>
 
