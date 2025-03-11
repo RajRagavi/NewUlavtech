@@ -16,6 +16,7 @@ import SeedPlan from "./BackendUI/SeedPlan";
 import RootPlan from "./BackendUI/RootPlan";
 import SproutPlan from "./BackendUI/SproutPlan";
 import InvestForm from "./BackendUI/InvestForm";
+import InvestmentsList from "./BackendUI/InvestmentsList";
 
 function Layout() {
   const location = useLocation();
@@ -48,6 +49,7 @@ function Layout() {
         <Route path="/plans/root" element={<RootPlan />} />
         <Route path="/plans/sprout" element={<SproutPlan />} />
         <Route path="/invest" element={<InvestForm />} />
+        <Route path="/investmentsList" element={<InvestmentsList />} />
       </Routes>
 
    
