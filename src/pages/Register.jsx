@@ -145,12 +145,15 @@ const Register = () => {
   // Google Login
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      alert("Google Login Successful!");
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Google Login Successful!", result.user);
+      navigate("/dashboard");  // Redirect to a page after successful login
     } catch (error) {
+      console.error("Google Login Error:", error.message);
       alert(error.message);
     }
   };
+  
 
   return (
     <div className="h-screen   mb-30 flex items-center justify-center ">

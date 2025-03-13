@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
 
-import { auth } from "../firebase/firebaseConfig";
+import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Fruits from "../assets/img/veggies.jpg";
 import Google from "../assets/img/Google.png";
-import Fb from "../assets/img/Fb.png";
-import Insta from "../assets/img/Insta.png";
+// import Fb from "../assets/img/Fb.png";
+// import Insta from "../assets/img/Insta.png";
 import Logo from "../assets/img/logo.png";
 
 const Signin = () => {
@@ -33,13 +33,15 @@ const Signin = () => {
   // Google Login
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, provider);
-      navigate("/");
-    } catch (err) {
-      setError("Google Sign-In Failed.");
-      console.error("Google Login Error:", err.message);
+      const result = await signInWithPopup(auth, googleProvider);
+      // console.log("Google Login Successful!", result.user);
+      navigate("/dashboard");  // Redirect to a page after successful login
+    } catch (error) {
+      console.error("Google Login Error:", error.message);
+      alert(error.message);
     }
   };
+  
 
   return (
     <div className="h-screen   mb-30 flex items-center justify-center ">
@@ -102,12 +104,12 @@ const Signin = () => {
             <button onClick={handleGoogleLogin} className="p-2 cursor-pointer hover:shadow">
               <img src={Google} alt="Google" className="w-6 h-6" />
             </button>
-            <button className="p-2 cursor-pointer hover:shadow">
+            {/* <button className="p-2 cursor-pointer hover:shadow">
               <img src={Fb} alt="Facebook" className="w-6 h-6" />
             </button>
             <button className="p-2 cursor-pointer hover:shadow">
               <img src={Insta} alt="Instagram" className="w-6 h-6" />
-            </button>
+            </button> */}
           </div>
 
           {/* Signup Link */}
