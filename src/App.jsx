@@ -20,6 +20,7 @@ import SproutPlan from "./BackendUI/SproutPlan";
 import InvestForm from "./BackendUI/InvestForm";
 import InvestmentsList from "./BackendUI/InvestmentsList";
 import Maturity from "./BackendUI/Maturity";
+import ReferEarn from "./BackendUI/ReferEarn";
 
 //  Protected Route Component
 const ProtectedRoute = () => {
@@ -41,7 +42,7 @@ const ProtectedRoute = () => {
 // Layout Component
 function Layout() {
   const location = useLocation();
-  const hideNavbarFooterRoutes = ["/dashboard", "/user-data", "/plans/seed", "/plans/root", "/plans/sprout", "/register", "/signin", "/invest","/maturity"];
+  const hideNavbarFooterRoutes = ["/dashboard", "/user-data", "/plans/seed", "/plans/root", "/plans/sprout", "/register", "/signin", "/invest","/maturity","/refer-earn"];
   const shouldHideNavbarFooter = hideNavbarFooterRoutes.includes(location.pathname);
 
   return (
@@ -69,6 +70,7 @@ function Layout() {
           <Route path="/invest" element={<InvestForm />} />
           <Route path="/investmentsList" element={<InvestmentsList />} />
           <Route path="/maturity" element={<Maturity />}/>
+          <Route path="/refer-earn" element={<ReferEarn />}/>
         </Route>
       </Routes>
 

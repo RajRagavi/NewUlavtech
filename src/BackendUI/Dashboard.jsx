@@ -3,7 +3,8 @@ import { FaBell, FaUser, FaChartBar, FaDollarSign, FaClock } from "react-icons/f
 import Sidebar from "./Sidebar";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useNavigate } from "react-router-dom"; // For redirecting users
+import { useNavigate } from "react-router-dom"; 
+import { fetchTotalUsers,fetchTotalInvestment,fetchRecentActivities  } from "./utils/fetchData";
 
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -12,9 +13,43 @@ const db = getFirestore();
 const auth = getAuth();
 
 const Dashboard = () => {
-  const [role, setUserRole] = useState(""); // Stores user role
-  const [loading, setLoading] = useState(true); // Track loading state
-  const navigate = useNavigate(); // For navigation
+  const [role, setUserRole] = useState("");
+  const [loading, setLoading] = useState(true); 
+  const navigate = useNavigate(); 
+  const [totalUsers, setTotalUsers] = useState(0);
+  
+  const [totalInvestment, setTotalInvestment] = useState(0);
+  const [recentActivities, setRecentActivities] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const users = await fetchTotalUsers();
+      const investment = await fetchTotalInvestment();
+      setTotalUsers(users);
+      setTotalInvestment(investment);
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const activities = await fetchRecentActivities();
+        setRecentActivities(activities);
+      } catch (error) {
+        console.error("Error fetching recent activities:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  
+  // useEffect(() => {
+  //   if (role === "admin") {
+  //     fetchTotalUsers().then(setTotalUsers);
+  //   }
+  // }, [role]);
+
 
   useEffect(() => {
     AOS.init({ duration: 800 });
@@ -56,41 +91,40 @@ const Dashboard = () => {
 
         {role === "admin" ? (
           <>
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { title: "Total Users", value: "500 Active Users", icon: <FaUser className="text-3xl text-blue-500" /> },
-                { title: "Total Investment", value: "₹10,00,000", icon: <FaDollarSign className="text-3xl text-green-500" /> },
-                { title: "Total Returns", value: "₹2,50,000", icon: <FaChartBar className="text-3xl text-yellow-500" /> },
-                { title: "Pending Requests", value: "5 Requests", icon: <FaBell className="text-3xl text-red-500" /> }
-              ].map((item, index) => (
-                <div key={index} className="p-6 bg-white shadow-lg rounded-lg flex items-center justify-between hover:scale-105 transition duration-300">
-                  <div>
-                    <h3 className="text-xl font-semibold">{item.title}</h3>
-                    <p className="text-gray-500">{item.value}</p>
-                  </div>
-                  {item.icon}
-                </div>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { title: "Total Users", value: `${totalUsers} Active Users`, icon: <FaUser className="text-3xl text-blue-500" /> },
+          { title: "Total Investment", value:`₹${totalInvestment.toLocaleString()}`, icon: <FaDollarSign className="text-3xl text-green-500" /> },
+          { title: "Total Returns", value: "₹2,50,000", icon: <FaChartBar className="text-3xl text-yellow-500" /> },
+          { title: "Pending Requests", value: "5 Requests", icon: <FaBell className="text-3xl text-red-500" /> }
+        ].map((item, index) => (
+          <div key={index} className="p-6 bg-white shadow-lg rounded-lg flex items-center justify-between hover:scale-105 transition duration-300">
+            <div>
+              <h3 className="text-xl font-semibold">{item.title}</h3>
+              <p className="text-gray-500">{item.value}</p>
             </div>
+            {item.icon}
+          </div>
+        ))}
+      </div>
 
              
-        <div className="mt-6 p-6 bg-white shadow-lg rounded-lg hover:scale-95 transition">
-          <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-          <ul>
-            <li className="flex justify-between border-b py-2">
-              <span>John Doe signed up</span>
-              <span className="text-gray-500">2 hours ago</span>
-            </li>
-            <li className="flex justify-between border-b py-2">
-              <span>₹50,000 invested by user XYZ</span>
-              <span className="text-gray-500">3 hours ago</span>
-            </li>
-            <li className="flex justify-between border-b py-2">
-              <span>Withdrawal of ₹10,000 approved</span>
-              <span className="text-gray-500">5 hours ago</span>
-            </li>
-          </ul>
-        </div>
+        {/* Recent Activity Section */}
+      <div className="mt-6 p-6 bg-white shadow-lg rounded-lg hover:scale-95 transition">
+        <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
+        <ul>
+          {recentActivities.length > 0 ? (
+            recentActivities.map((activity, index) => (
+              <li key={index} className="flex justify-between border-b py-2">
+                <span>{activity.message}</span>
+                <span className="text-gray-500">{activity.timestamp.toLocaleString()}</span>
+              </li>
+            ))
+          ) : (
+            <li className="text-gray-500">No recent activities</li>
+          )}
+        </ul>
+      </div>
 
      
         <div className="mt-6 p-6 bg-white shadow-lg rounded-lg hover:scale-95 transition">

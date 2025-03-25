@@ -125,7 +125,7 @@ const Maturity = () => {
   
 
   return (
-    <div className="flex h-full bg-gray-200">
+    <div className="flex flex-col md:flex-row h-full bg-gray-200">
       <Sidebar />
       {/* Calendar Section */}
       <div className="md:w-1/4 w-full p-3" data-aos="fade-right">

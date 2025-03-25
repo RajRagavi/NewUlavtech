@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { motion } from "framer-motion";
+import { doc, getDoc, getFirestore, collection, getDocs, query, where } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import InvestmentsList from "./InvestmentsList";
+import Sidebar from "./Sidebar";
 
 const db = getFirestore();
 const auth = getAuth();
 
 const SeedPlan = () => {
-  const navigate = useNavigate();
   const [role, setRole] = useState(null);
+  const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -21,7 +21,9 @@ const SeedPlan = () => {
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
-          setRole(userSnap.data().role);
+          const userData = userSnap.data();
+          setRole(userData.role);
+          fetchInvestments(userData.role, user.uid);
         }
       }
       setLoading(false);
@@ -30,37 +32,78 @@ const SeedPlan = () => {
     return () => unsubscribe();
   }, []);
 
+  
+  // ✅ Fetch Investments Based on Role
+  const fetchInvestments = async (userRole, userId) => {
+    try {
+      let investmentsQuery;
+
+      if (userRole === "admin") {
+        investmentsQuery = collection(db, "investments"); // Admin sees all investments
+      } else {
+        investmentsQuery = query(collection(db, "investments"), where("userId", "==", userId)); // Users see only theirs
+      }
+
+      const querySnapshot = await getDocs(investmentsQuery);
+      const investmentData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setInvestments(investmentData);
+    } catch (error) {
+      console.error("Error fetching investments:", error);
+    }
+  };
+
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-green-700 text-lg font-semibold">Loading...</p>
-      </div>
-    );
+    return <p className="text-center text-green-700 text-lg font-semibold">Loading...</p>;
   }
 
   return (
     <div className="flex h-full bg-gray-200">
       <Sidebar />
-      
       <div className="flex-1 min-h-screen bg-gradient-to-r from-green-200 to-green-50 py-10 px-6">
-        {role === "admin" ? (
-          <AdminView />
-        ) : (
-          <UserView navigate={navigate} />
-        )}
+        {role === "admin" ? <AdminView investments={investments} /> : <UserView navigate={navigate} />}
       </div>
     </div>
   );
 };
 
-// Separate components for cleaner code
-const AdminView = () => (
+// ✅ Admin View Component
+const AdminView = ({ investments }) => (
   <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
-    <h1 className="text-3xl font-bold text-green-800 text-center mb-4">User Investment Details</h1>
-    <InvestmentsList showAll={true} />
+    <h1 className="text-3xl font-bold text-green-800 text-center mb-4">Seed Plan Investors</h1>
+    {investments.length === 0 ? (
+      <p className="text-center text-gray-600">No investments found</p>
+    ) : (
+      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead>
+          <tr className="bg-green-500 text-white">
+            <th className="p-3">Name</th>
+            <th className="p-3">Phone</th>
+            <th className="p-3">Plan</th>
+            <th className="p-3">Investment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {investments
+            .filter((inv) => inv.plan === "Seed Plan") // ✅ Only Seed Plan Investors
+            .map((inv) => (
+              <tr key={inv.id} className="text-center border-b">
+                <td className="p-3">{inv.username}</td>
+                <td className="p-3">{inv.phone}</td>
+                <td className="p-3">{inv.plan}</td>
+                <td className="p-3">₹{inv.investmentAmount}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    )}
   </div>
 );
 
+// ✅ User View Component
 const UserView = ({ navigate }) => (
   <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
     <h1 className="text-3xl font-bold text-green-800 text-center mb-4">🌱 Seed Plan</h1>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaTachometerAlt, FaUser, FaSeedling, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaTimes, FaTachometerAlt, FaUser, FaSeedling, FaSignOutAlt,FaGift  } from "react-icons/fa";
 import { MdOutlineExpandMore, MdOutlineExpandLess } from "react-icons/md";
 import { BsBell } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
@@ -66,7 +66,7 @@ const Sidebar = () => {
     <>
       {/* Mobile Sidebar Button */}
       <button
-        className="lg:hidden fixed top-4 right-4 z-1000 bg-green-600 text-white p-2 rounded-md shadow-lg"
+        className="lg:hidden fixed top-4 right-4 z-1000 bg-green-600 text-white p-2 rounded-md shadow-lg mr-5"
         onClick={() => setIsSidebarOpen(true)}
       >
         <FaBars size={24} />
@@ -136,6 +136,10 @@ const Sidebar = () => {
             <BsBell className="mr-3 text-green-600" /> Maturity
           </Link>
 
+ {/* Refer & Earn Option */}
+ <Link to="/refer-earn" className="flex items-center w-full p-2 rounded-lg hover:bg-green-100">
+            <FaGift className="mr-3 text-green-600" /> Refer & Earn
+          </Link>
           {/* Logout Button */}
           <button
             onClick={handleLogout}

@@ -29,4 +29,4 @@ const facebookProvider = new FacebookAuthProvider();
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, googleProvider,db, storage , facebookProvider, RecaptchaVerifier, signInWithPhoneNumber, createUserWithEmailAndPassword };
+export { app,auth, googleProvider,db, storage , facebookProvider, RecaptchaVerifier, signInWithPhoneNumber, createUserWithEmailAndPassword };
