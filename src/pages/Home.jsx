@@ -21,27 +21,27 @@ const InvestmentProcess = [
   {
     step: "Step 1",
     title: "SIGNUP & COMPLETE KYC",
-    description: "Being by registering on our platform and completing the KYC process, ensuring compliance and security for your investments.",
+    description: "Being by registering on our platform and completing the KYC process, ensuring compliance and security for your subscription.",
     icon: <PiUserCheckThin />,
   },
   {
     step: "Step 2",
-    title: "SELECT A PROJECT & INVEST",
-    description: "Stay informed about your investment journey by tracking project progress and monitoring your portfolio regularly.",
+    title: "SELECT A PROJECT & SUBSCRIPTION",
+    description: "Stay informed about your subscription journey by tracking project progress and monitoring your portfolio regularly.",
     icon: <FaSeedling />,
   },
   {
     step: "Step 3",
-    title: "TRACK YOUR INVESTMENT",
-    description: "Stay informed about your investment journey by tracking project progress and monitoring your portfolio regularly.",
+    title: "TRACK YOUR Subscription",
+    description: "Stay informed about your subscription journey by tracking project progress and monitoring your portfolio regularly.",
     icon: <HiOutlineRefresh />,
   },
-  {
-    step: "Step 4",
-    title: "EARN TAX FREE RETURNS",
-    description: "Enjoy the benefits of tax-free returns on your investment, making your earnings even more rewarding.",
-    icon: <HiReceiptPercent />,
-  },
+  // {
+  //   step: "Step 4",
+  //   title: "EARN TAX FREE RETURNS",
+  //   description: "Enjoy the benefits of tax-free returns on your subscription, making your earnings even more rewarding.",
+  //   icon: <HiReceiptPercent />,
+  // },
 ];
 
 const Home = () => {
@@ -92,7 +92,7 @@ const Home = () => {
      
        {/* Features Section */}
        <div className="py-16 text-center pt-40">
-        <h2 className='text-3xl font-bold text-green-700'>Why Invest in UlavTech?</h2>
+        <h2 className='text-3xl font-bold text-green-700'>Why subscription in UlavTech?</h2>
         <p className='text-lg text-gray-600 max-w-4xl mx-auto mt-4'>
           Agriculture is the backbone of human civilization. We aim to modernize farming while preserving its essence.
         </p>
@@ -110,9 +110,9 @@ const Home = () => {
       {/* Investment Process */}
       <div className="bg-gray-100 py-16 text-center">
       {/* Section Heading */}
-      <h2 className="text-3xl font-bold text-black">Simplified Investment Process</h2>
+      <h2 className="text-3xl font-bold text-black">Simplified subscription Process</h2>
       <p className="text-lg text-gray-600 max-w-3xl mx-auto mt-2">
-        Embark on your Investment journey with our easy and secure platform today
+        Embark on your subscription journey with our easy and secure platform today
       </p>
 
       {/* Steps Grid */}
@@ -162,12 +162,9 @@ const Home = () => {
           </p>
           <p className="text-gray-700 mb-4">
             Agriculture has always been the backbone of human civilization. Today,
-            it’s more than just a necessity—it’s a lucrative investment opportunity.
+            it’s more than just a necessity.
           </p>
-          <p className="text-gray-700 mb-6">
-            Agricultural investments offer diversification in an investor’s
-            portfolio, reducing risks compared to volatile markets.
-          </p>
+          
           <button className="!bg-black text-white !w-[120px] px-6 py-3 rounded-lg font-semibold">
             Get Started
           </button>

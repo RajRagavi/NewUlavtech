@@ -29,9 +29,9 @@ const Investment = () => {
               Your Investment <br /> Will Grow up to
               <span className="text-green-700"> Modernly Tradition</span>
             </h1>
-            <h2 className="text-3xl font-bold text-green-900">
+            {/* <h2 className="text-3xl font-bold text-green-900">
               15% of deposit per <br /> Annum
-            </h2>
+            </h2> */}
             <p className="text-lg md:text-xl text-gray-700">
               The mission of UlavTech is to distribute natural products with utmost freshness and quality.
               Let’s join our hands together to support farmers.
@@ -40,7 +40,7 @@ const Investment = () => {
             {/* Know More Button */}
             <button 
               className="text-white bg-black border border-black px-4 w-[120px] py-2 rounded-md text-sm cursor-pointer"
-              onClick={scrollToSeedSection} // Scroll Function
+              onClick={scrollToSeedSection} 
             >
               Know More
             </button>

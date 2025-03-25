@@ -8,12 +8,14 @@ import healthy_natural from "../assets/img/healthy_natural.jpg";
 import roots_generative from "../assets/img/roots_generative.jpg";
 import roots_ground from "../assets/img/roots_ground.jpg";
 import root from "../assets/img/root.jpg";
+import { useNavigate } from "react-router-dom";
+
 
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 const SeedSection = () => {
-
+  const navigate = useNavigate();
     useEffect(() => {
         AOS.init({ duration: 1000, easing: "ease-in-out" });
     }, []);
@@ -76,6 +78,7 @@ const SeedSection = () => {
   <button 
     className="bg-black text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-800 transition"  
     data-aos="fade-left"
+    onClick={() => navigate("/invest")} // Redirect to /invest on click
   >
     Get Started
   </button>
@@ -116,11 +119,12 @@ const SeedSection = () => {
       <p className="text-lg font-bold"><strong>Fixed Rewards:</strong> 8% of your deposit per annum</p>
       <p className="text-lg font-bold"><strong>Variable Rewards:</strong> Instant Referral Bonus up to 5%, Activity Rewards</p>
       <button 
-        className="bg-black text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-800 transition"  
-        data-aos="fade-left"
-      >
-        Get Started
-      </button>
+    className="bg-black text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-800 transition"  
+    data-aos="fade-left"
+    onClick={() => navigate("/invest")} // Redirect to /invest on click
+  >
+    Get Started
+  </button>
     </div>
   </div>
 </div>
@@ -174,11 +178,12 @@ data-aos="fade-left"
 <strong>Variable Rewards:</strong> Instant Referral Bonus up to 5%, Activity Rewards
 </p>
 <button 
-className="bg-black text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-800 transition"  
-data-aos="fade-left"
->
-Get Started
-</button>
+    className="bg-black text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-800 transition"  
+    data-aos="fade-left"
+    onClick={() => navigate("/invest")} // Redirect to /invest on click
+  >
+    Get Started
+  </button>
 </div>
 
     </div>

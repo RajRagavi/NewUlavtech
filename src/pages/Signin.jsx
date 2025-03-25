@@ -20,16 +20,19 @@ const Signin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
+  
+    console.log("Attempting login with:", email, password);
+  
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/"); // Redirect after login
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login successful:", userCredential);
+      navigate("/");
     } catch (err) {
-      setError("Invalid Email or Password. Try Again.");
-      console.error("Login Error:", err.message);
+      console.error("Firebase Login Error:", err.code, err.message);
+      setError(`Error: ${err.message}`);
     }
   };
-
+    
   // Google Login
   const handleGoogleLogin = async () => {
     try {

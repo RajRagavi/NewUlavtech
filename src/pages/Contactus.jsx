@@ -25,8 +25,8 @@ const Contactus = () => {
         </p>
 
         <div className="mt-6">
-          <p className="text-lg font-semibold text-gray-800">Phone:</p>
-          <p className="text-black">+91 98765 43210</p>
+          {/* <p className="text-lg font-semibold text-gray-800">Phone:</p>
+          <p className="text-black">+91 98765 43210</p> */}
 
           <p className="text-lg font-semibold text-gray-800 mt-5">Email:</p>
           <p className="text-black">contact@yourdomain.com</p>
