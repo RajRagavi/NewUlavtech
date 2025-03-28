@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import Fruits from '../assets/img/veggies.jpg';
 import Logo from '../assets/img/logo.png';
 import Google from '../assets/img/Google.png';
-import { auth, googleProvider, db } from "../firebase/firebaseConfig";
+import { auth, googleProvider, db ,storage } from "../firebase/firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  signInWithRedirect,
   sendEmailVerification,
-
+  GoogleAuthProvider,
+  getRedirectResult 
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
@@ -20,6 +22,7 @@ const Register = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -30,6 +33,18 @@ const Register = () => {
     referralCode: "", // ✅ Referral Code Added
   });
 
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          const user = result.user;
+          console.log("Redirect Login Success:", user);
+          navigate("/dashboard");
+        }
+      })
+      .catch((error) => {
+        console.error("Google Redirect Error:", error.message);
+      })});
   useEffect(() => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
@@ -182,7 +197,18 @@ const sendOTP = async (phoneNumber) => {
       });
   };
   
-  
+    // Google Login
+    const handleGoogleLogin = async () => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        console.log("Google Login Success:", result.user);
+      } catch (error) {
+        console.error("Google Sign-In Error:", error.message);
+      }
+    };
+    
+    
+    
   return (
     <div className="h-screen flex items-center justify-center">
       <div className="w-full bg-white rounded-lg shadow-lg flex">
@@ -298,9 +324,14 @@ const sendOTP = async (phoneNumber) => {
 
           {/* Social Login */}
           <div className="flex justify-center space-x-4 mb-4">
-            <button className="p-2 cursor-pointer hover:shadow">
-              <img src={Google} alt="Google" className="w-6 h-6" />
-            </button>
+          <button 
+  onClick={handleGoogleLogin} 
+  className={`p-2 ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:shadow"}`} 
+  disabled={loading}
+>
+  {loading ? "Signing in..." : <img src={Google} alt="Google" className="w-6 h-6" />}
+</button>
+
           </div>
 
           <p className="text-black text-sm">

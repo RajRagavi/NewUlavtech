@@ -12,7 +12,7 @@ import Register from "./pages/Register";
 import Contactus from "./pages/Contactus";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Dashboard from "./BackendUI/Dashboard";
+import Dashboard from "./BackendUI/Dashboard/Dashboard";
 import UserData from "./BackendUI/UserData";
 import SeedPlan from "./BackendUI/SeedPlan";
 import RootPlan from "./BackendUI/RootPlan";
